@@ -125,19 +125,6 @@ def auction_table(df, month):
 
     with open(f"C:\\src\\kellydata_php\\tables\\auction\\{month}.html", "w") as f:
         f.write(html)
-########################################
-
-def auction_data_db_to_plot():
-    months = [3, 12, 36]
-    for month in months:
-        df = auction_data_db_select(month)
-        auction_plot(df, month)
-
-def auction_data_db_to_table():
-    months = [3, 12, 36]
-    for month in months:
-        df = auction_data_db_select(month)
-        auction_table(df, month)
 
 ########################################
 
