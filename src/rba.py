@@ -61,7 +61,6 @@ def rba_plot(df, months):
             color='darkred'
         if diff != 0.0:
             plt.text(row['date'], row['price'] + 0.01, row['price'], fontdict={'color':color})
-            print(f"{row['date']}, {row['price']}")
         last_interest = row['price']
 
     # ax.minorticks_on()
