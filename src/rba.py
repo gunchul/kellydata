@@ -2,6 +2,7 @@ import pandas as pd
 import datetime
 from db import DB
 import matplotlib.pyplot as plt
+from env import PROJECTS
 
 def rba_date_to_date(rba_date):
     return datetime.datetime.strptime(rba_date, "%d %b %Y").strftime("%Y-%m-%d")
@@ -66,7 +67,7 @@ def rba_plot(df, months):
     # ax.minorticks_on()
 
     plt.title(f'RBA Cash Rate Target: Last {months} months')
-    plt.savefig(f"C:\\src\\kellydata_php\\images\\rba\\{months}.png")
+    plt.savefig(PROJECTS["root"] + f"/images/rba/{months}.png")
 
 def rba_table_header():
     return f'''
@@ -101,7 +102,7 @@ def rba_table(df, month):
         '''
     html += rba_table_tail()
 
-    with open(f"C:\\src\\kellydata_php\\tables\\rba\\{month}.html", "w") as f:
+    with open(PROJECTS["root"] + f"/tables/rba/{month}.html", "w") as f:
         f.write(html)
 
 ########################################

@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup as bs
+from env import PROJECTS
 from db import DB
 import datetime
 import pandas as pd
@@ -85,7 +86,7 @@ def auction_plot(df, months):
     axs[1].legend()
 
     fig.tight_layout()
-    fig.savefig(f"C:\\src\\kellydata_php\\images\\auction\\{months}.png")
+    fig.savefig(PROJECTS["root"] + f"/images/auction/{months}.png")
 
 def auction_table_header():
     return f'''
@@ -123,7 +124,7 @@ def auction_table(df, month):
         '''
     html += auction_table_tail()
 
-    with open(f"C:\\src\\kellydata_php\\tables\\auction\\{month}.html", "w") as f:
+    with open(PROJECTS["root"] + f"/tables/auction/{month}.html", "w") as f:
         f.write(html)
 
 ########################################
@@ -138,7 +139,9 @@ def auction_data_db_to_all():
         df = auction_data_db_select(month)
         auction_plot(df, month)
         auction_table(df, month)
+
 ########################################
 
 if __name__ == "__main__":
+    # auction_data_web_to_db()
     auction_data_db_to_all()

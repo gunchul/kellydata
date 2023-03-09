@@ -4,3 +4,8 @@ DATABASE = {
     "password":"rjscjfTHD11",
     "database":"test_kellydata"
 }
+
+PROJECTS = {
+    "root":"/home/kelly_je_kim/html",
+    # "root":"C:\\src\\kellydata_php",
+}

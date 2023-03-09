@@ -2,6 +2,7 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 import yfinance as yf
 import matplotlib.pyplot as plt
+from env import PROJECTS
 
 finantial_tab = {
     'audusd':["AUDUSD=X","1 AUD to USD"],
@@ -32,7 +33,8 @@ def finantial_plot(menu, months, df):
     ax.plot(df["Date"], df["Close"])
     ax.set(xlabel='Date', ylabel="Rate", title=f"{finantial_title_get(menu)} for {months} months")
     ax.grid()
-    fig.savefig(f"C:\\src\\kellydata_php\\images\\{menu}\\{months}.png")
+    fig.savefig(PROJECTS["root"] + f"/images/{menu}/{months}.png")
+    plt.close()
 
 def finantial_table_header():
     return f'''
@@ -62,7 +64,7 @@ def finantial_table(menu, months, df):
         '''
     html += finantial_table_tail()
 
-    with open(f"C:\\src\\kellydata_php\\tables\\{menu}\\{months}.html", "w") as f:
+    with open(PROJECTS["root"] + f"/tables/{menu}/{months}.html", "w") as f:
         f.write(html)
 
 ########################################
