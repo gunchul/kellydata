@@ -92,7 +92,7 @@ def auction_plot(menu, months, df):
     fig.savefig(env_plot_path_get(menu, months))
 
 def auction_table(menu, month, df):
-    cities = ["Brisbane", "Melbourne", "Sydney"]
+    cities = ["Sydney", "Melbourne", "Brisbane"]
 
     df['clearance_rate'] = df['clearance_rate'] * 100
 
