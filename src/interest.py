@@ -141,6 +141,15 @@ def interest_data_db_select(months):
     return df
 
 def interest_plot(menu, months, df):
+    columns = [
+        ["fixed_owner_1year_rate", "Fixed Owner 1 Year"],
+        ["fixed_owner_2year_rate", "Fixed Owner 2 Year"],
+        ["fixed_owner_3year_rate", "Fixed Owner 3 Year"],
+        ["fixed_invest_1year_rate", "Fixed Investor 1 Year"],
+        ["fixed_invest_2year_rate", "Fixed Investor 2 Year"],
+        ["fixed_invest_3year_rate", "Fixed Investor 3 Year"],
+    ]
+
     banks = ["commbank", "nab", "westpac", "anz"]
 
     df = df.set_index(["date", "bank"])
@@ -150,26 +159,12 @@ def interest_plot(menu, months, df):
     fig.set_figwidth(10)
     fig.set_figheight(20)
 
-    for bank in banks:
-        axs[0].plot(df.index, df['fixed_owner_1year_rate'][bank], label=f"{bank}")
-        axs[1].plot(df.index, df['fixed_owner_2year_rate'][bank], label=f"{bank}")
-        axs[2].plot(df.index, df['fixed_owner_3year_rate'][bank], label=f"{bank}")
-        axs[3].plot(df.index, df['fixed_invest_1year_rate'][bank], label=f"{bank}")
-        axs[4].plot(df.index, df['fixed_invest_2year_rate'][bank], label=f"{bank}")
-        axs[5].plot(df.index, df['fixed_invest_3year_rate'][bank], label=f"{bank}")
-
-    titles = [
-                "fixed_owner_1year_rate",
-                "fixed_owner_2year_rate",
-                "fixed_owner_3year_rate",
-                "fixed_investor_1year_rate",
-                "fixed_investor_2year_rate",
-                "fixed_investor_3year_rate",
-             ]
-    for i in range(6):
-        axs[i].set(xlabel='Date', ylabel="%", title=f"{titles[i]} for {months} months")
+    for i, col in enumerate(columns):
+        for bank in banks:
+            axs[i].plot(df.index, df[col[0]][bank], label=bank)
+        axs[i].set(xlabel='Date', ylabel="%", title=col[1])
         axs[i].grid()
-        axs[i].legend()
+        axs[i].legend(loc="upper left")
 
     fig.tight_layout()
     fig.savefig(env_plot_path_get(menu, months))

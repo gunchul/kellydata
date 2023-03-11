@@ -83,10 +83,10 @@ def auction_plot(menu, months, df):
 
     axs[0].set(xlabel='Date', ylabel="Percent(%)", title=f"Clearance Rate(%) for {months} months")
     axs[0].grid()
-    axs[0].legend()
+    axs[0].legend(loc="upper left")
     axs[1].set(xlabel='Date', ylabel="Count", title=f"Total Auctions for {months} months")
     axs[1].grid()
-    axs[1].legend()
+    axs[1].legend(loc="upper left")
 
     fig.tight_layout()
     fig.savefig(env_plot_path_get(menu, months))
