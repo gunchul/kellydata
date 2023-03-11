@@ -1,10 +1,12 @@
 from bs4 import BeautifulSoup as bs
-from env import PROJECTS
 from db import DB
 import datetime
 import pandas as pd
 import requests
 import matplotlib.pyplot as plt
+
+from env import env_plot_path_get, env_table_path_get
+from table import table_gen
 
 def corelogic_date_to_date(corelogic_date):
     date_str = " ".join(corelogic_date.split(" ")[2:])
@@ -64,7 +66,7 @@ def auction_data_db_select(months):
     df = pd.read_sql(query, con=db_conn)
     return df
 
-def auction_plot(df, months):
+def auction_plot(menu, months, df):
     cities = ["Brisbane", "Melbourne", "Sydney"]
 
     df = df.set_index(["date", "city"])
@@ -73,6 +75,7 @@ def auction_plot(df, months):
 
     fig, axs = plt.subplots(2, 1)
     fig.set_figwidth(10)
+    fig.set_figheight(10)
 
     for city in cities:
         axs[0].plot(df.index, df['clearance_rate'][city], label=f"{city}")
@@ -86,45 +89,20 @@ def auction_plot(df, months):
     axs[1].legend()
 
     fig.tight_layout()
-    fig.savefig(PROJECTS["root"] + f"/images/auction/{months}.png")
+    fig.savefig(env_plot_path_get(menu, months))
 
-def auction_table_header():
-    return f'''
-    <div class="table-responsive">
-    <table class="table table-striped table-sm">
-        <thead>
-        <tr>
-            <th scope="col">Date</th>
-            <th scope="col">City</th>
-            <th scope="col">Total Auctions</th>
-            <th scope="col">Clearance Rate(%)</th>
-        </tr>
-        </thead>
-        <tbody>
-    '''
-def auction_table_tail():
-    return '''
-        </tbody>
-        </table>
-    '''
-def auction_table(df, month):
+def auction_table(menu, month, df):
     cities = ["Brisbane", "Melbourne", "Sydney"]
+
     df['clearance_rate'] = df['clearance_rate'] * 100
 
-    html = auction_table_header()
+    headers = ["Date", "City", "Total Auctions", "Clearance Rate(%)"]
+    rows = []
 
     for index, row in df.iterrows():
-        html += f'''
-        <tr>
-            <td>{row['date'].strftime('%Y-%m-%d')}</td>
-            <td>{row['city']}</td>
-            <td>{row['total_auctions']}</td>
-            <td>{row['clearance_rate']:.2f}</td>
-        </tr>
-        '''
-    html += auction_table_tail()
-
-    with open(PROJECTS["root"] + f"/tables/auction/{month}.html", "w") as f:
+        rows.append([row['date_str'], row['city'], row['total_auctions'], row['clearance_rate']])
+    html = table_gen(headers, rows)
+    with open(env_table_path_get(menu, month), "w") as f:
         f.write(html)
 
 ########################################
@@ -137,8 +115,9 @@ def auction_data_db_to_all():
     months = [3, 12, 36]
     for month in months:
         df = auction_data_db_select(month)
-        auction_plot(df, month)
-        auction_table(df, month)
+        df['date_str'] = df['date'].apply(lambda x:x.strftime('%Y-%m-%d'))
+        auction_plot("auction", month, df)
+        auction_table("auction", month, df)
 
 ########################################
 

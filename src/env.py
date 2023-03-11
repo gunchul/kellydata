@@ -9,3 +9,9 @@ PROJECTS = {
     # "root":"/home/kelly_je_kim/html",
     "root":"C:\\src\\kellydata_php",
 }
+
+def env_plot_path_get(menu, month):
+    return PROJECTS["root"] + f"/images/{menu}/{month}.png"
+
+def env_table_path_get(menu, month):
+    return PROJECTS["root"] + f"/tables/{menu}/{month}.html"

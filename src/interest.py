@@ -7,7 +7,9 @@ import pandas as pd
 import requests
 import matplotlib.pyplot as plt
 import time
-from env import PROJECTS
+
+from env import env_plot_path_get, env_table_path_get
+from table import table_gen
 
 def anz_data_get(wd):
     result = []
@@ -138,7 +140,7 @@ def interest_data_db_select(months):
     df = pd.read_sql(query, con=db_conn)
     return df
 
-def interest_plot(df, months):
+def interest_plot(menu, months, df):
     banks = ["commbank", "nab", "westpac", "anz"]
 
     df = df.set_index(["date", "bank"])
@@ -170,50 +172,28 @@ def interest_plot(df, months):
         axs[i].legend()
 
     fig.tight_layout()
-    fig.savefig(PROJECTS["root"] + f"/images/interest/{months}.png")
+    fig.savefig(env_plot_path_get(menu, months))
     plt.close()
 
-def interest_table_header():
-    return f'''
-    <div class="table-responsive">
-    <table class="table table-striped table-sm">
-        <thead>
-        <tr>
-            <th scope="col">Date</th>
-            <th scope="col">Bank</th>
-            <th scope="col">Owner 1 Year</th>
-            <th scope="col">Owner 2 Year</th>
-            <th scope="col">Owner 3 Year</th>
-            <th scope="col">Investor 1 Year</th>
-            <th scope="col">Investor 2 Year</th>
-            <th scope="col">Investor 3 Year</th>
-        </tr>
-        </thead>
-        <tbody>
-    '''
-def interest_table_tail():
-    return '''
-        </tbody>
-        </table>
-    '''
-def interest_table(df, months):
-    html = interest_table_header()
-    for index, row in df.iterrows():
-        html += f'''
-        <tr>
-            <td>{row['date'].strftime('%Y-%m-%d')}</td>
-            <td>{row['bank']}</td>
-            <td>{row['fixed_owner_1year_rate']:.2f}</td>
-            <td>{row['fixed_owner_2year_rate']:.2f}</td>
-            <td>{row['fixed_owner_3year_rate']:.2f}</td>
-            <td>{row['fixed_invest_1year_rate']:.2f}</td>
-            <td>{row['fixed_invest_2year_rate']:.2f}</td>
-            <td>{row['fixed_invest_3year_rate']:.2f}</td>
-        </tr>
-        '''
-    html += interest_table_tail()
+def interest_table(menu, month, df):
+    headers = ["Date","Bank","Owner 1 Year","Owner 2 Year","Owner 3 Year","Investor 1 Year","Investor 2 Year","Investor 3 Year"]
+    rows = []
 
-    with open(PROJECTS["root"] + f"/tables/interest/{months}.html", "w") as f:
+    for index, row in df.iterrows():
+        rows.append([
+            f"{row['date_str']}",
+            f"{row['bank']}",
+            f"{row['fixed_owner_1year_rate']:.2f}",
+            f"{row['fixed_owner_2year_rate']:.2f}",
+            f"{row['fixed_owner_3year_rate']:.2f}",
+            f"{row['fixed_invest_1year_rate']:.2f}",
+            f"{row['fixed_invest_2year_rate']:.2f}",
+            f"{row['fixed_invest_3year_rate']:.2f}"
+        ])
+
+    html = table_gen(headers, rows)
+
+    with open(env_table_path_get(menu, month), "w") as f:
         f.write(html)
 ######################################################
 
@@ -237,9 +217,11 @@ def interest_data_db_to_all():
     months = [3, 12, 36]
     for month in months:
         df = interest_data_db_select(month)
-        interest_plot(df, month)
-        interest_table(df, month)
+        df['date_str'] = df['date'].apply(lambda x:x.strftime('%Y-%m-%d'))
+        interest_plot("interest", month, df)
+        interest_table("interest", month, df)
 
 ######################################################
 if __name__ == "__main__":
+    # interest_data_web_to_db()
     interest_data_db_to_all()
