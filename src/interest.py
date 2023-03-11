@@ -150,7 +150,7 @@ def interest_plot(menu, months, df):
         ["fixed_invest_3year_rate", "Fixed Investor 3 Year"],
     ]
 
-    banks = ["commbank", "nab", "westpac", "anz"]
+    banks = ["commbank", "nab", "anz", "westpac"]
 
     df = df.set_index(["date", "bank"])
     df = df.unstack()
