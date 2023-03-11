@@ -65,17 +65,17 @@ def westpac_data_get2(wd):
 def nab_data_get(wd):
     result = []
 
-    wd.get(f"https://www.nab.com.au/personal/home-loans/nab-fixed-rate-home-loan")
+    wd.get("https://www.nab.com.au/personal/interest-rates-fees-and-charges/home-loan-interest-rates")
     time.sleep(2)
 
     html = bs(wd.page_source, "lxml")
     selectors = [
-        "#panel-item_1676285757865 > div > div > div:nth-child(2) > div > table > tbody > tr:nth-child(1) > td:nth-child(2) > div > div:nth-child(2)",
-        "#panel-item_1676285757865 > div > div > div:nth-child(2) > div > table > tbody > tr:nth-child(2) > td:nth-child(2) > div > div:nth-child(2)",
-        "#panel-item_1676285757865 > div > div > div:nth-child(2) > div > table > tbody > tr:nth-child(3) > td:nth-child(2) > div > div:nth-child(2)",
-        "#panel-item_1676285819796 > div > div > div:nth-child(2) > div > table > tbody > tr:nth-child(1) > td:nth-child(2) > div > div:nth-child(2)",
-        "#panel-item_1676285819796 > div > div > div:nth-child(2) > div > table > tbody > tr:nth-child(2) > td:nth-child(2) > div > div:nth-child(2)",
-        "#panel-item_1676285819796 > div > div > div:nth-child(2) > div > table > tbody > tr:nth-child(3) > td:nth-child(2) > div > div:nth-child(2)",
+        "#panel-item_1669729434747 > div > div > div:nth-child(3) > div > table > tbody > tr:nth-child(1) > td:nth-child(2) > div > div:nth-child(2)",
+        "#panel-item_1669729434747 > div > div > div:nth-child(3) > div > table > tbody > tr:nth-child(2) > td:nth-child(2) > div > div:nth-child(2)",
+        "#panel-item_1669729434747 > div > div > div:nth-child(3) > div > table > tbody > tr:nth-child(3) > td:nth-child(2) > div > div:nth-child(2)",
+        "#panel-item_1669729485810 > div > div > div:nth-child(3) > div > table > tbody > tr:nth-child(1) > td:nth-child(2) > div > div:nth-child(2)",
+        "#panel-item_1669729485810 > div > div > div:nth-child(3) > div > table > tbody > tr:nth-child(2) > td:nth-child(2) > div > div:nth-child(2)",
+        "#panel-item_1669729485810 > div > div > div:nth-child(3) > div > table > tbody > tr:nth-child(3) > td:nth-child(2) > div > div:nth-child(2)",
     ]
     for selector in selectors:
         result.append(html.select_one(selector).text.split("%")[0])
