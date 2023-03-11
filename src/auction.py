@@ -26,31 +26,26 @@ def auction_data_get():
 def auction_data_db_insert(data_date, df):
     db = DB()
     db_name = db.db_name_get()
-    db_conn = db.db_get()
 
     for index, row in df.iterrows():
         if row['City'] == "Combined Capitals*":
             continue
-        try:
-            mycursor = db_conn.cursor()
-            sql = f"""INSERT INTO {db_name}.auction(added_date, date, city, total_auctions, sold_prior_to_auction, sold_at_auction, sold_after_auction, passed_in, withdrawn, clearance_rate, cleared_auctions, uncleared_auctions)
-                      VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-            values = (datetime.datetime.now(),
-                        data_date,
-                        row['City'],
-                        row['Total auctions'],
-                        row['Sold prior to auction'],
-                        row['Sold at auction'],
-                        row['Sold after auction'],
-                        row['Passed in'],
-                        row['Withdrawn'],
-                        float(row['Clearance rate'].rstrip("%")) / 100,
-                        row['Cleared Auctions'],
-                        row['Uncleared Auctions'])
-            mycursor.execute(sql, values)
-            db_conn.commit()
-        except Exception as e:
-            print(f"{e}: {sql} {values}")
+
+        sql = f"""INSERT INTO {db_name}.auction(added_date, date, city, total_auctions, sold_prior_to_auction, sold_at_auction, sold_after_auction, passed_in, withdrawn, clearance_rate, cleared_auctions, uncleared_auctions)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+        values = (datetime.datetime.now(),
+                    data_date,
+                    row['City'],
+                    row['Total auctions'],
+                    row['Sold prior to auction'],
+                    row['Sold at auction'],
+                    row['Sold after auction'],
+                    row['Passed in'],
+                    row['Withdrawn'],
+                    float(row['Clearance rate'].rstrip("%")) / 100,
+                    row['Cleared Auctions'],
+                    row['Uncleared Auctions'])
+        db.insert(sql, values)
 
 def auction_data_db_select(months):
     db = DB()

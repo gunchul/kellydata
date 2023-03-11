@@ -1,4 +1,5 @@
 import mysql.connector
+from mysql.connector import errorcode
 from env import DATABASE
 
 class DB:
@@ -17,6 +18,16 @@ class DB:
 
     def db_name_get(self):
         return DATABASE["database"]
+
+    def insert(self, sql, values):
+        try:
+            mycursor = self.db.cursor()
+            mycursor.execute(sql, values)
+            self.db.commit()
+        except mysql.connector.Error as err:
+            if err.errno != errorcode.ER_DUP_ENTRY:
+                print(f"ERROR: {err}: {sql} {values}")
+                raise err
 
 if __name__ == "__main__":
     db = DB()

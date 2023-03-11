@@ -18,7 +18,6 @@ def rba_data_get():
 def rba_data_db_insert(df):
     db = DB()
     db_name = db.db_name_get()
-    db_conn = db.db_get()
     for row in df.values:
         sql = f"""INSERT INTO {db_name}.rba_price(added_date, date, price, changed_rate)
                     VALUES (%s, %s, %s, %s)"""
@@ -26,12 +25,7 @@ def rba_data_db_insert(df):
                     row[4],
                     row[2],
                     row[1])
-        try:
-            mycursor = db_conn.cursor()
-            mycursor.execute(sql, values)
-            db_conn.commit()
-        except Exception as e:
-            print(f"{e}: {sql} {values}")
+        db.insert(sql, values)
 
 def rba_data_db_select(months):
     db = DB()
@@ -95,4 +89,5 @@ def rba_data_db_to_all():
 ########################################
 
 if __name__ == "__main__":
-    rba_data_db_to_all()
+    rba_data_web_to_db()
+    # rba_data_db_to_all()

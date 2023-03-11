@@ -100,31 +100,24 @@ def commbank_data_get(wd):
         result.append(html.select_one(selector).text.split("%")[0])
     return result
 
+# INSERT INTO test_kellydata.interest(added_date, date, bank, fixed_owner_1year_rate, fixed_owner_2year_rate, fixed_owner_3year_rate, fixed_invest_1year_rate, fixed_invest_2year_rate, fixed_invest_3year_rate ) VALUES ("2023-03-11","2022-11-23","anz","5.49","5.79","6.19","5.69","5.99","6.39");
 def interest_insert(interests):
     db = DB()
     db_name = db.db_name_get()
-    db_conn = db.db_get()
 
     for key in interests.keys():
-        try:
-            mycursor = db_conn.cursor()
-            sql = f"""INSERT INTO {db_name}.interest(added_date, date, bank, fixed_owner_1year_rate, fixed_owner_2year_rate, fixed_owner_3year_rate, fixed_invest_1year_rate, fixed_invest_2year_rate, fixed_invest_3year_rate )
-                      VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-            values = (datetime.datetime.now(),
-                      datetime.datetime.now().strftime("%Y-%m-%d"),
-                      key,
-                      interests[key][0],
-                      interests[key][1],
-                      interests[key][2],
-                      interests[key][3],
-                      interests[key][4],
-                      interests[key][5])
-            # print(sql)
-            # print(values)
-            mycursor.execute(sql, values)
-            db_conn.commit()
-        except Exception as e:
-            print(f"{e}: {sql} {values}")
+        sql = f"""INSERT INTO {db_name}.interest(added_date, date, bank, fixed_owner_1year_rate, fixed_owner_2year_rate, fixed_owner_3year_rate, fixed_invest_1year_rate, fixed_invest_2year_rate, fixed_invest_3year_rate )
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+        values = (datetime.datetime.now(),
+                    datetime.datetime.now().strftime("%Y-%m-%d"),
+                    key,
+                    interests[key][0],
+                    interests[key][1],
+                    interests[key][2],
+                    interests[key][3],
+                    interests[key][4],
+                    interests[key][5])
+        db.insert(sql, values)
 
 def interest_data_db_select(months):
     db = DB()
