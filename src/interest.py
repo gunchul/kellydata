@@ -164,10 +164,21 @@ def interest_plot(menu, months, df):
     plt.close()
 
 def interest_table(menu, month, df):
+    df = df.sort_values(by='date', ascending=True)
+
     headers = ["Date","Bank","Owner 1 Year","Owner 2 Year","Owner 3 Year","Investor 1 Year","Investor 2 Year","Investor 3 Year"]
     rows = []
 
+    table_rows = []
+    last = {}
     for index, row in df.iterrows():
+        if row["bank"] not in last:
+            table_rows.append(row)
+        elif interest_test_changed(last[row["bank"]], row):
+            table_rows.append(row)
+        last[row["bank"]] = row
+
+    for row in reversed(table_rows):
         rows.append([
             f"{row['date_str']}",
             f"{row['bank']}",
@@ -183,6 +194,7 @@ def interest_table(menu, month, df):
 
     with open(env_table_path_get(menu, month), "w") as f:
         f.write(html)
+
 ######################################################
 
 def interest_data_web_to_db():
@@ -209,7 +221,48 @@ def interest_data_db_to_all():
         interest_plot("interest", month, df)
         interest_table("interest", month, df)
 
+def interest_test_changed(prev_row, row):
+    if ((prev_row['fixed_owner_1year_rate'] != row['fixed_owner_1year_rate']) or
+        (prev_row['fixed_owner_2year_rate'] != row['fixed_owner_2year_rate']) or
+        (prev_row['fixed_owner_3year_rate'] != row['fixed_owner_3year_rate']) or
+        (prev_row['fixed_invest_1year_rate'] != row['fixed_invest_1year_rate']) or
+        (prev_row['fixed_invest_2year_rate'] != row['fixed_invest_2year_rate']) or
+        (prev_row['fixed_invest_3year_rate'] != row['fixed_invest_3year_rate'])):
+        return True
+    return False
+
+def interest_test():
+    df = interest_data_db_select(36)
+    df['date_str'] = df['date'].apply(lambda x:x.strftime('%Y-%m-%d'))
+    df = df.sort_values(by='date', ascending=True)
+
+    headers = ["Date","Bank","Owner 1 Year","Owner 2 Year","Owner 3 Year","Investor 1 Year","Investor 2 Year","Investor 3 Year"]
+    rows = []
+
+    table_rows = []
+    last = {}
+    for index, row in df.iterrows():
+        if row["bank"] not in last:
+            table_rows.append(row)
+        elif interest_test_changed(last[row["bank"]], row):
+            table_rows.append(row)
+        last[row["bank"]] = row
+
+    for row in reversed(table_rows):
+        rows.append([
+            f"{row['date_str']}",
+            f"{row['bank']}",
+            f"{row['fixed_owner_1year_rate']:.2f}",
+            f"{row['fixed_owner_2year_rate']:.2f}",
+            f"{row['fixed_owner_3year_rate']:.2f}",
+            f"{row['fixed_invest_1year_rate']:.2f}",
+            f"{row['fixed_invest_2year_rate']:.2f}",
+            f"{row['fixed_invest_3year_rate']:.2f}"
+        ])
+
+
 ######################################################
 if __name__ == "__main__":
     # interest_data_web_to_db()
     interest_data_db_to_all()
+    # interest_test()
