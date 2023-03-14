@@ -1,0 +1,1 @@
+0 8 * * * (export DISPLAY=:0 && source /home/gunchul/venv/kellydata/bin/activate && cd /home/gunchul/src/kellydata/src && python main.py >> main.log 2>&1 && cd /home/gunchul/src/kellydata_php && git add . && git commit -m "auto commit" && git push)

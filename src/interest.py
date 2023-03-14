@@ -8,7 +8,7 @@ import requests
 import matplotlib.pyplot as plt
 import time
 
-from env import env_plot_path_get, env_table_path_get
+from env import env_plot_path_get, env_table_path_get, web_driver_path_get
 from table import table_gen
 
 def anz_data_get(wd):
@@ -199,7 +199,7 @@ def interest_table(menu, month, df):
 
 def interest_data_web_to_db():
     interests = {}
-    wd = webdriver.Chrome(r"C:\bin\chromedriver_win32_109\chromedriver.exe")
+    wd = webdriver.Chrome(web_driver_path_get())
     maps = [
         ['anz',anz_data_get],
         ['westpac',westpac_data_get2],
@@ -232,37 +232,24 @@ def interest_test_changed(prev_row, row):
     return False
 
 def interest_test():
-    df = interest_data_db_select(36)
-    df['date_str'] = df['date'].apply(lambda x:x.strftime('%Y-%m-%d'))
-    df = df.sort_values(by='date', ascending=True)
+    interests = {}
+    wd = webdriver.Chrome(web_driver_path_get())
+    maps = [
+        ['anz',anz_data_get],
+        ['westpac',westpac_data_get2],
+        ['nab',nab_data_get],
+        ['commbank',commbank_data_get],
+    ]
 
-    headers = ["Date","Bank","Owner 1 Year","Owner 2 Year","Owner 3 Year","Investor 1 Year","Investor 2 Year","Investor 3 Year"]
-    rows = []
+    for map in maps:
+        interests[map[0]] = map[1](wd)
 
-    table_rows = []
-    last = {}
-    for index, row in df.iterrows():
-        if row["bank"] not in last:
-            table_rows.append(row)
-        elif interest_test_changed(last[row["bank"]], row):
-            table_rows.append(row)
-        last[row["bank"]] = row
-
-    for row in reversed(table_rows):
-        rows.append([
-            f"{row['date_str']}",
-            f"{row['bank']}",
-            f"{row['fixed_owner_1year_rate']:.2f}",
-            f"{row['fixed_owner_2year_rate']:.2f}",
-            f"{row['fixed_owner_3year_rate']:.2f}",
-            f"{row['fixed_invest_1year_rate']:.2f}",
-            f"{row['fixed_invest_2year_rate']:.2f}",
-            f"{row['fixed_invest_3year_rate']:.2f}"
-        ])
-
+    wd.quit()
+    print(interests)
+    
 
 ######################################################
 if __name__ == "__main__":
     # interest_data_web_to_db()
-    interest_data_db_to_all()
-    # interest_test()
+    # interest_data_db_to_all()
+    interest_test()
